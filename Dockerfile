@@ -12,6 +12,9 @@ RUN apt-get -y upgrade
 # Install dependencies
 RUN apt-get install -y curl wget vim zip mysql-server openjdk-6-jdk
 
+# Expose mysql PORT
+EXPOSE 3306
+
 ADD stage stage
 RUN chmod 755 stage/*.bash
 RUN cd stage; ./setup.bash
