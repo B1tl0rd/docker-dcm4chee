@@ -1,7 +1,7 @@
 #
 # DCM4CHEE - Open source picture archive and communications server (PACS)
 #
-FROM ubuntu:12.04
+FROM ubuntu:14.04
 MAINTAINER AI Analysis, Inc <admin@aianalysis.com>
 
 # Load the stage folder, which contains the setup scripts.
