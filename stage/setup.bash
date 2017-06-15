@@ -26,13 +26,10 @@ sed -ri "s/VERS=3.0.11/VERS=3.0.12/" $DCM_DIR/bin/install_arr.sh
 sed -ri "s/dcm4che-core-2.0.25/dcm4che-core-2.0.27/" $DCM_DIR/bin/install_arr.sh
 
 # Download the DICOM toolkit (to use dcmsnd) plus a sample image
-cd /var/local/dcm4chee
-curl -G http://netcologne.dl.sourceforge.net/project/dcm4che/dcm4che2/2.0.29/dcm4che-2.0.29-bin.zip > /var/local/dcm4chee/dcm4che-2.0.29-bin.zip
+cd $DCM4CHEE_HOME
+curl -G http://netcologne.dl.sourceforge.net/project/dcm4che/dcm4che2/2.0.29/dcm4che-2.0.29-bin.zip > $DCM4CHEE_HOME/dcm4che-2.0.29-bin.zip
 unzip -q dcm4che-2.0.29-bin.zip
 rm dcm4che-2.0.29-bin.zip
-cd /var/local/dcm4chee/dcm4che-2.0.29/bin
-curl -G http://deanvaughan.org/projects/dicom_samples/xr_chest.dcm > xr_chest.dcm
-cd /var/local/dcm4chee
 
 # Copy files from JBoss to dcm4chee
 $DCM_DIR/bin/install_jboss.sh jboss-4.2.3.GA > /dev/null
