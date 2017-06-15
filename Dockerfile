@@ -10,7 +10,7 @@ RUN apt-get update
 RUN apt-get -y upgrade
 
 # Install dependencies
-RUN apt-get install -y curl wget vim zip mysql-server openjdk-6-jdk
+RUN apt-get install -y curl vim zip mysql-server openjdk-6-jdk
 
 # Expose mysql PORT
 EXPOSE 3306

@@ -8,12 +8,14 @@ cd $DCM4CHEE_HOME
 
 # Download the binary package for DCM4CHEE
 curl -G http://netcologne.dl.sourceforge.net/project/dcm4che/dcm4chee/2.18.1/dcm4chee-2.18.1-mysql.zip > /stage/dcm4chee-2.18.1-mysql.zip
-unzip -q /stage/dcm4chee-2.17.1-mysql.zip
-DCM_DIR=$DCM4CHEE_HOME/dcm4chee-2.17.1-mysql
+unzip -q /stage/dcm4chee-2.18.1-mysql.zip
+rm /stage/dcm4chee-2.18.1-mysql.zip
+DCM_DIR=$DCM4CHEE_HOME/dcm4chee-2.18.1-mysql
 
 # Download the binary package for JBoss
 curl -G http://netcologne.dl.sourceforge.net/project/jboss/JBoss/JBoss-4.2.3.GA/jboss-4.2.3.GA-jdk6.zip > /stage/jboss-4.2.3.GA-jdk6.zip
 unzip -q /stage/jboss-4.2.3.GA-jdk6.zip
+rm /stage/jboss-4.2.3.GA-jdk6.zip
 JBOSS_DIR=$DCM4CHEE_HOME/jboss-4.2.3.GA
 
 # Download the Audit Record Repository (ARR) package
@@ -25,11 +27,11 @@ sed -ri "s/dcm4che-core-2.0.25/dcm4che-core-2.0.27/" $DCM_DIR/bin/install_arr.sh
 
 # Download the DICOM toolkit (to use dcmsnd) plus a sample image
 cd /var/local/dcm4chee
-wget -O dcm4che-2.0.29-bin.zip http://downloads.sourceforge.net/project/dcm4che/dcm4che2/2.0.29/dcm4che-2.0.29-bin.zip
+curl -G http://netcologne.dl.sourceforge.net/project/dcm4che/dcm4che2/2.0.29/dcm4che-2.0.29-bin.zip > /var/local/dcm4chee/dcm4che-2.0.29-bin.zip
 unzip -q dcm4che-2.0.29-bin.zip
 rm dcm4che-2.0.29-bin.zip
 cd /var/local/dcm4chee/dcm4che-2.0.29/bin
-wget http://deanvaughan.org/projects/dicom_samples/xr_chest.dcm
+curl -G http://deanvaughan.org/projects/dicom_samples/xr_chest.dcm > xr_chest.dcm
 cd /var/local/dcm4chee
 
 # Copy files from JBoss to dcm4chee
@@ -37,6 +39,9 @@ $DCM_DIR/bin/install_jboss.sh jboss-4.2.3.GA > /dev/null
 
 # Copy files from the Audit Record Repository (ARR) to dcm4chee
 $DCM_DIR/bin/install_arr.sh dcm4chee-arr-3.0.12-mysql > /dev/null
+
+# expose mysql
+sed -ri "s/bind-address\s+= 127.0.0.1/bind-address = 0.0.0.0/" /etc/mysql/my.cnf 
 
 # Install and set up MySQL
 mysql_install_db
