@@ -20,6 +20,8 @@ JBOSS_DIR=$DCM4CHEE_HOME/jboss-4.2.3.GA
 curl -G http://netcologne.dl.sourceforge.net/project/dcm4che/dcm4chee-arr/3.0.12/dcm4chee-arr-3.0.12-mysql.zip > /stage/dcm4chee-arr-3.0.12-mysql.zip
 unzip -q /stage/dcm4chee-arr-3.0.12-mysql.zip
 ARR_DIR=$DCM4CHEE_HOME/dcm4chee-arr-3.0.12-mysql
+sed -ri "s/VERS=3.0.11/VERS=3.0.12/" $DCM_DIR/bin/install_arr.sh
+sed -ri "s/dcm4che-core-2.0.25/dcm4che-core-2.0.27/" $DCM_DIR/bin/install_arr.sh
 
 # Copy files from JBoss to dcm4chee
 $DCM_DIR/bin/install_jboss.sh jboss-4.2.3.GA > /dev/null
