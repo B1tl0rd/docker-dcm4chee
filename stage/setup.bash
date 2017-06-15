@@ -23,6 +23,15 @@ ARR_DIR=$DCM4CHEE_HOME/dcm4chee-arr-3.0.12-mysql
 sed -ri "s/VERS=3.0.11/VERS=3.0.12/" $DCM_DIR/bin/install_arr.sh
 sed -ri "s/dcm4che-core-2.0.25/dcm4che-core-2.0.27/" $DCM_DIR/bin/install_arr.sh
 
+# Download the DICOM toolkit (to use dcmsnd) plus a sample image
+cd /var/local/dcm4chee
+wget -O dcm4che-2.0.29-bin.zip http://downloads.sourceforge.net/project/dcm4che/dcm4che2/2.0.29/dcm4che-2.0.29-bin.zip
+unzip -q dcm4che-2.0.29-bin.zip
+rm dcm4che-2.0.29-bin.zip
+cd /var/local/dcm4chee/dcm4che-2.0.29/bin
+wget http://deanvaughan.org/projects/dicom_samples/xr_chest.dcm
+cd /var/local/dcm4chee
+
 # Copy files from JBoss to dcm4chee
 $DCM_DIR/bin/install_jboss.sh jboss-4.2.3.GA > /dev/null
 
@@ -42,6 +51,17 @@ sed "s/type=/engine=/g" $ARR_DIR/sql/dcm4chee-arr-mysql.ddl > fixed.ddl
 mv fixed.ddl $ARR_DIR/sql/dcm4chee-arr-mysql.ddl
 # Load the 'arrdb' database schema
 mysql -uarr -parr arrdb < $ARR_DIR/sql/dcm4chee-arr-mysql.ddl
+
+# create a user to allow external clients (e.g. mySQLWorkbench) to connect
+# remember to change the password
+echo "CREATE USER 'username'@'localhost' IDENTIFIED BY 'password';\n \
+GRANT ALL PRIVILEGES ON *.* TO 'username'@'localhost' WITH GRANT OPTION;\n \
+CREATE USER 'username'@'%' IDENTIFIED BY 'password'; \n\
+GRANT ALL PRIVILEGES ON *.* TO 'username'@'%' WITH GRANT OPTION; \n\
+FLUSH PRIVILEGES;\n \
+quit \n" > init.sql
+mysql -uroot < init.sql;
+
 killall mysqld
 sleep 5s
 
