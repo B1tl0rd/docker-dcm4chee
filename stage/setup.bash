@@ -1,12 +1,6 @@
 #!/bin/sh
 set -v
 
-apt-get update
-apt-get upgrade -y
-
-# Install dependencies
-apt-get install -y curl zip mysql-server openjdk-6-jdk
-
 # Make the dcm4chee home dir
 DCM4CHEE_HOME=/var/local/dcm4chee
 mkdir -p $DCM4CHEE_HOME
