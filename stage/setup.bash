@@ -2,43 +2,10 @@
 set -v
 
 # Make the dcm4chee home dir
-DCM4CHEE_HOME=/var/local/dcm4chee
-mkdir -p $DCM4CHEE_HOME
-cd $DCM4CHEE_HOME
-
-# Download the binary package for DCM4CHEE
-curl -G http://netcologne.dl.sourceforge.net/project/dcm4che/dcm4chee/2.18.1/dcm4chee-2.18.1-mysql.zip > /stage/dcm4chee-2.18.1-mysql.zip
-unzip -q /stage/dcm4chee-2.18.1-mysql.zip
-rm /stage/dcm4chee-2.18.1-mysql.zip
 DCM_DIR=$DCM4CHEE_HOME/dcm4chee-2.18.1-mysql
-
-# Download the binary package for JBoss
-curl -G http://netcologne.dl.sourceforge.net/project/jboss/JBoss/JBoss-4.2.3.GA/jboss-4.2.3.GA-jdk6.zip > /stage/jboss-4.2.3.GA-jdk6.zip
-unzip -q /stage/jboss-4.2.3.GA-jdk6.zip
-rm /stage/jboss-4.2.3.GA-jdk6.zip
 JBOSS_DIR=$DCM4CHEE_HOME/jboss-4.2.3.GA
-
-# Download the Audit Record Repository (ARR) package
-curl -G http://netcologne.dl.sourceforge.net/project/dcm4che/dcm4chee-arr/3.0.12/dcm4chee-arr-3.0.12-mysql.zip > /stage/dcm4chee-arr-3.0.12-mysql.zip
-unzip -q /stage/dcm4chee-arr-3.0.12-mysql.zip
 ARR_DIR=$DCM4CHEE_HOME/dcm4chee-arr-3.0.12-mysql
-sed -ri "s/VERS=3.0.11/VERS=3.0.12/" $DCM_DIR/bin/install_arr.sh
-sed -ri "s/dcm4che-core-2.0.25/dcm4che-core-2.0.27/" $DCM_DIR/bin/install_arr.sh
-
-# Download the DICOM toolkit (to use dcmsnd) plus a sample image
-cd $DCM4CHEE_HOME
-curl -G http://netcologne.dl.sourceforge.net/project/dcm4che/dcm4che2/2.0.29/dcm4che-2.0.29-bin.zip > $DCM4CHEE_HOME/dcm4che-2.0.29-bin.zip
-unzip -q dcm4che-2.0.29-bin.zip
-rm dcm4che-2.0.29-bin.zip
-
-# Copy files from JBoss to dcm4chee
-$DCM_DIR/bin/install_jboss.sh jboss-4.2.3.GA > /dev/null
-
-# Copy files from the Audit Record Repository (ARR) to dcm4chee
-$DCM_DIR/bin/install_arr.sh dcm4chee-arr-3.0.12-mysql > /dev/null
-
-# expose mysql
-sed -ri "s/bind-address\s+= 127.0.0.1/bind-address = 0.0.0.0/" /etc/mysql/my.cnf 
+java_version=6
 
 # Install and set up MySQL
 mysql_install_db
@@ -73,6 +40,8 @@ mv dcm4chee-wado-xmbean.xml $DCM_DIR/server/default/conf/xmdesc/dcm4chee-wado-xm
 
 # Update environment variables
 echo "\
-JAVA_HOME=/usr/lib/jvm/java-6-openjdk-amd64\n\
+JAVA_HOME=/usr/lib/jvm/java-$java_version-openjdk-amd64\n\
 PATH=\"/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin\"\n\
 " > /etc/environment
+echo 'source /etc/environment' > ~/.bashrc
+#source /etc/environment
