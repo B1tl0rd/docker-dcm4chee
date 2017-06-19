@@ -5,7 +5,7 @@ set -v
 DCM_DIR=$DCM4CHEE_HOME/dcm4chee-2.18.1-mysql
 JBOSS_DIR=$DCM4CHEE_HOME/jboss-4.2.3.GA
 ARR_DIR=$DCM4CHEE_HOME/dcm4chee-arr-3.0.12-mysql
-java_version=6
+java_version=8
 
 # Install and set up MySQL
 mysql_install_db
@@ -40,7 +40,7 @@ mv dcm4chee-wado-xmbean.xml $DCM_DIR/server/default/conf/xmdesc/dcm4chee-wado-xm
 
 # Update environment variables
 echo "\
-JAVA_HOME=/usr/lib/jvm/java-$java_version-openjdk-amd64\n\
+JAVA_HOME=/usr/lib/jvm/java-$java_version-oracle\n\
 PATH=\"/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin\"\n\
 " > /etc/environment
 echo 'source /etc/environment' > ~/.bashrc

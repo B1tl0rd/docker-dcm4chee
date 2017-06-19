@@ -1,10 +1,10 @@
 #
 # DCM4CHEE - Open source picture archive and communications server (PACS)
 #
-FROM ubuntu:14.04
-MAINTAINER AI Analysis, Inc <admin@aianalysis.com>
+FROM debian:8
+#MAINTAINER AI Analysis, Inc <admin@aianalysis.com>
 
-ENV java_version=6
+ENV java_version=8
 ENV DCM4CHEE_HOME=/var/local/dcm4chee
 ENV DCM_VER=2.18.1
 ENV DCM_DIR=$DCM4CHEE_HOME/dcm4chee-$DCM_VER-mysql 
@@ -12,14 +12,21 @@ ENV DCM_DIR=$DCM4CHEE_HOME/dcm4chee-$DCM_VER-mysql
 # Update OS
 RUN apt-get update && apt-get -y upgrade
 
-# Install dependencies
-RUN apt-get install -y curl vim zip mysql-server openjdk-$java_version-jdk
+# Install Java & dependencies
+RUN echo "deb http://ppa.launchpad.net/webupd8team/java/ubuntu xenial main" | tee /etc/apt/sources.list.d/webupd8team-java.list
+RUN echo "deb-src http://ppa.launchpad.net/webupd8team/java/ubuntu xenial main" | tee -a /etc/apt/sources.list.d/webupd8team-java.list 
+RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys EEA14886
+RUN echo oracle-java8-installer shared/accepted-oracle-license-v1-1 select true | /usr/bin/debconf-set-selections
+RUN apt-get update
+RUN apt-get install -y oracle-java8-installer oracle-java8-set-default
+RUN export DEBIAN_FRONTEND=noninteractive; apt-get -q -y install mysql-server
+RUN apt-get install -y curl vim zip
 
 # Expose mysql PORT
 EXPOSE 3306
 
 # Make the dcm4chee home dir
-RUN mkdir -p /stage && mkdir -p $DCM4CHEE_HOME && cd $DCM4CHEE_HOME
+RUN mkdir -p $DCM4CHEE_HOME && cd $DCM4CHEE_HOME
 
 # Download the binary package for DCM4CHEE
 RUN cd $DCM4CHEE_HOME && curl -G http://netcologne.dl.sourceforge.net/project/dcm4che/dcm4chee/$DCM_VER/dcm4chee-$DCM_VER-mysql.zip > $DCM4CHEE_HOME/dcm4chee-$DCM_VER-mysql.zip && unzip -q $DCM4CHEE_HOME/dcm4chee-$DCM_VER-mysql.zip && rm $DCM4CHEE_HOME/dcm4chee-$DCM_VER-mysql.zip && DCM_DIR=$DCM4CHEE_HOME/dcm4chee-$DCM_VER-mysql 
@@ -44,6 +51,7 @@ RUN cd $DCM4CHEE_HOME && $DCM_DIR/bin/install_arr.sh $DCM4CHEE_HOME/dcm4chee-arr
 # Expose mysql
 RUN sed -ri "s/bind-address\s+= 127.0.0.1/bind-address = 0.0.0.0/" /etc/mysql/my.cnf 
 
+RUN mkdir -p /stage 
 ADD stage stage
 RUN chmod 755 stage/*.bash; cd stage; ./setup.bash
 
