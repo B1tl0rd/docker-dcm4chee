@@ -9,10 +9,8 @@ ENV DCM4CHEE_HOME=/var/local/dcm4chee
 ENV DCM_VER=2.18.1
 ENV DCM_DIR=$DCM4CHEE_HOME/dcm4chee-$DCM_VER-mysql 
 
-# Load the stage folder, which contains the setup scripts.
-#
-RUN apt-get update
-RUN apt-get -y upgrade
+# Update OS
+RUN apt-get update && apt-get -y upgrade
 
 # Install dependencies
 RUN apt-get install -y curl vim zip mysql-server openjdk-$java_version-jdk
@@ -20,12 +18,11 @@ RUN apt-get install -y curl vim zip mysql-server openjdk-$java_version-jdk
 # Expose mysql PORT
 EXPOSE 3306
 
-RUN mkdir -p /stage
 # Make the dcm4chee home dir
-RUN mkdir -p $DCM4CHEE_HOME && cd $DCM4CHEE_HOME
+RUN mkdir -p /stage && mkdir -p $DCM4CHEE_HOME && cd $DCM4CHEE_HOME
 
 # Download the binary package for DCM4CHEE
-RUN cd $DCM4CHEE_HOME && curl -G http://netcologne.dl.sourceforge.net/project/dcm4che/dcm4chee/$DCM_VER/dcm4chee-$DCM_VER-mysql.zip > $DCM4CHEE_HOME/dcm4chee-$DCM_VER-mysql.zip && ls -la $DCM4CHEE_HOME && cd $DCM4CHEE_HOME && unzip -q $DCM4CHEE_HOME/dcm4chee-$DCM_VER-mysql.zip && rm $DCM4CHEE_HOME/dcm4chee-$DCM_VER-mysql.zip && DCM_DIR=$DCM4CHEE_HOME/dcm4chee-$DCM_VER-mysql 
+RUN cd $DCM4CHEE_HOME && curl -G http://netcologne.dl.sourceforge.net/project/dcm4che/dcm4chee/$DCM_VER/dcm4chee-$DCM_VER-mysql.zip > $DCM4CHEE_HOME/dcm4chee-$DCM_VER-mysql.zip && unzip -q $DCM4CHEE_HOME/dcm4chee-$DCM_VER-mysql.zip && rm $DCM4CHEE_HOME/dcm4chee-$DCM_VER-mysql.zip && DCM_DIR=$DCM4CHEE_HOME/dcm4chee-$DCM_VER-mysql 
 
 # Download the binary package for JBoss
 RUN cd $DCM4CHEE_HOME && curl -G http://netcologne.dl.sourceforge.net/project/jboss/JBoss/JBoss-4.2.3.GA/jboss-4.2.3.GA-jdk6.zip > $DCM4CHEE_HOME/jboss-4.2.3.GA-jdk6.zip && unzip -q $DCM4CHEE_HOME/jboss-4.2.3.GA-jdk6.zip && rm $DCM4CHEE_HOME/jboss-4.2.3.GA-jdk6.zip && JBOSS_DIR=$DCM4CHEE_HOME/jboss-4.2.3.GA
@@ -48,7 +45,6 @@ RUN cd $DCM4CHEE_HOME && $DCM_DIR/bin/install_arr.sh $DCM4CHEE_HOME/dcm4chee-arr
 RUN sed -ri "s/bind-address\s+= 127.0.0.1/bind-address = 0.0.0.0/" /etc/mysql/my.cnf 
 
 ADD stage stage
-RUN chmod 755 stage/*.bash
-RUN cd stage; ./setup.bash
+RUN chmod 755 stage/*.bash; cd stage; ./setup.bash
 
 CMD ["stage/start.bash"]
