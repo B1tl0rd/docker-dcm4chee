@@ -1,7 +1,7 @@
 docker-dcm4chee
 ===============
 
-This project builds a [Docker](https://www.docker.com/) image for the [DCM4CHEE](http://www.dcm4che.org/) medical image manager/archive. The Docker image includes DCM4CHEE 2.18.1 running on a JBoss webapp server, backed by a MySQL database.  Installing DCM4CHEE from scratch is a [non-trivial exercise](http://dcm4che.org/confluence/display/ee2/Installation), so using a pre-built Docker image can save a lot of time.
+This project builds a [Docker](https://www.docker.com/) image for the [DCM4CHEE](http://www.dcm4che.org/) medical image manager/archive. The Docker image includes DCM4CHEE 2.18.1 running on a JBoss webapp server, backed by a PostgreSQL 9.1 database.  Installing DCM4CHEE from scratch is a [non-trivial exercise](http://dcm4che.org/confluence/display/ee2/Installation), so using a pre-built Docker image can save a lot of time.
 This image improves on [dpatriarche dcm4chee-2.17.3 image](https://github.com/dpatriarche/docker-dcm4chee).
  
 ## Building and running the 'dcm4chee' image
@@ -14,7 +14,7 @@ Once built the 'dcm4chee' image is run as follows:
 
     docker run -p 8080:8080 -p 11112:11112 -p 3306:3306 --name="pacs" dcm4chee
 
-Note that three ports must be mapped. Port 8080 is used by the DCM4CHEE web UI, while port 11112 is the DICOM port through which PACS workstations can perform DICOM network actions such as searching the archive, and downloading and uploading medical images. Port 3306 is optional, and exposed in order to access the MySQL DB through (e.g.) MySQLWorkbench.
+Note that two ports must be mapped. Port 8080 is used by the DCM4CHEE web UI, while port 11112 is the DICOM port through which PACS workstations can perform DICOM network actions such as searching the archive, and downloading and uploading medical images. 
 
 For convenience, shell scripts for the above actions are provided: `build.bash` to build the image, and `run.sh` to run a container based on the image.
 
